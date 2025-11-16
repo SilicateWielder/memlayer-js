@@ -4,63 +4,37 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "memlayer"
-version = "0.1.2"
-description = "The memory layer for LLMs - add persistent, intelligent memory to any LLM in minutes."
+version = "0.1.3"
+description = "The memory layer for LLMs — add persistent, intelligent memory to any model in minutes."
 readme = "README.md"
 authors = [{ name = "Divyansh Agrawal", email = "keshav.r.1925@gmail.com" }]
 maintainers = [{ name = "Divyansh Agrawal", email = "keshav.r.1925@gmail.com" }]
 license = "MIT"
+requires-python = ">=3.10"
+
 keywords = [
-    "llm", 
-    "memory", 
-    "ai", 
-    "ml",
-    "rag",
-    "artificial-intelligence",
-    "machine-learning",
-    "deep-learning",
-    "openai", 
-    "claude", 
-    "gemini", 
-    "ollama",
-    "anthropic",
-    "gpt",
-    "chatbot",
-    "conversational-ai",
-    "assistant",
-    "agent",
-    "ai-agent",
+    "llm",
+    "memory",
     "persistent-memory",
-    "context-management",
-    "ai-memory",
-    "llm-memory",
-    "memory-layer",
-    "stateful-llm",
-    "conversation-memory",
     "long-term-memory",
-    "knowledge-graph", 
+    "conversation-memory",
+    "context-management",
+    "context-window",
+    "stateful-llm",
+    "memory-layer",
+    "llm-memory",
     "vector-search",
-    "vector-database",
-    "vector-store",
-    "embedding",
-    "embeddings",
     "semantic-search",
     "similarity-search",
+    "embeddings",
+    "embedding-store",
+    "vector-database",
+    "knowledge-graph",
     "hybrid-search",
-    "rag",
     "retrieval",
     "retrieval-augmented-generation",
-    "chromadb",
-    "networkx",
-    "graph-database",
-    "nlp",
-    "natural-language-processing",
-    "text-processing",
-    "language-model",
-    "serverless",
-    "production-ready",
-    "scalable",
 ]
+
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -81,7 +55,7 @@ classifiers = [
     "Environment :: Console",
     "Environment :: Web Environment",
 ]
-requires-python = ">=3.10"
+
 dependencies = [
     "pydantic>=2.0.0",
     "openai>=1.12.0",
@@ -93,7 +67,7 @@ dependencies = [
     "networkx>=3.1",
     "anthropic>=0.72.1",
     "google-genai>=1.50.0",
-    "python-dateutil>=2.8.0"
+    "python-dateutil>=2.8.0",
 ]
 
 [project.optional-dependencies]

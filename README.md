@@ -1,4 +1,4 @@
-#  MemLayer - Plug-and-play memory for your LLM
+# MemLayer – The Plug-and-play persistent memory for your LLMs
 
 **The memory layer for LLMs - add persistent, intelligent memory to any LLM in minutes.**
 
