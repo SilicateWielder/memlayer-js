@@ -423,8 +423,8 @@ Use the docs when tuning for production. The following `docs/` files were added 
 
 ```bash
 # Clone repository
-git clone https://github.com/divagr18/memorylayer.git
-cd memorylayer
+git clone https://github.com/divagr18/memlayer.git
+cd memlayer
 
 # Install dependencies
 pip install -e .
@@ -439,7 +439,7 @@ python examples/01_basics/getting_started.py
 ### Project Structure
 
 ```
-memorylayer/
+memlayer/
 ├── memlayer/           # Core library
 │   ├── wrappers/          # LLM provider wrappers
 │   ├── storage/           # Storage backends (ChromaDB, NetworkX)
@@ -473,7 +473,7 @@ Please keep PRs focused and include tests for new features.
 - **Author/Maintainer**: Divyansh Agrawal
 - **Email**: keshav.r.1925@gmail.com
 - **GitHub**: [divagr18](https://github.com/divagr18)
-- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/divagr18/memorylayer/issues)
+- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/divagr18/memlayer/issues)
 
 For security vulnerabilities, please email directly with `SECURITY` in the subject line instead of opening a public issue.
 

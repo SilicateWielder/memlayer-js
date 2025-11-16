@@ -14,45 +14,72 @@ keywords = [
     "llm", 
     "memory", 
     "ai", 
+    "ml",
+    "rag",
+    "artificial-intelligence",
+    "machine-learning",
+    "deep-learning",
     "openai", 
     "claude", 
     "gemini", 
     "ollama",
     "anthropic",
+    "gpt",
     "chatbot",
     "conversational-ai",
-    "knowledge-graph", 
-    "vector-search",
-    "vector-database",
-    "embedding",
-    "semantic-search",
-    "rag",
-    "retrieval",
-    "chromadb",
-    "networkx",
-    "nlp",
-    "natural-language-processing",
-    "machine-learning",
+    "assistant",
+    "agent",
+    "ai-agent",
     "persistent-memory",
     "context-management",
     "ai-memory",
     "llm-memory",
     "memory-layer",
-    "stateful-llm"
+    "stateful-llm",
+    "conversation-memory",
+    "long-term-memory",
+    "knowledge-graph", 
+    "vector-search",
+    "vector-database",
+    "vector-store",
+    "embedding",
+    "embeddings",
+    "semantic-search",
+    "similarity-search",
+    "hybrid-search",
+    "rag",
+    "retrieval",
+    "retrieval-augmented-generation",
+    "chromadb",
+    "networkx",
+    "graph-database",
+    "nlp",
+    "natural-language-processing",
+    "text-processing",
+    "language-model",
+    "serverless",
+    "production-ready",
+    "scalable",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
+    "Intended Audience :: Information Technology",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Text Processing :: Linguistic",
+    "Topic :: Database",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Operating System :: OS Independent",
-    "Framework :: AsyncIO",
+    "Environment :: Console",
+    "Environment :: Web Environment",
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -80,10 +107,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/divagr18/memorylayer"
-Repository = "https://github.com/divagr18/memorylayer"
-Documentation = "https://github.com/divagr18/memorylayer#readme"
-Issues = "https://github.com/divagr18/memorylayer/issues"
+Homepage = "https://github.com/divagr18/memlayer"
+Repository = "https://github.com/divagr18/memlayer"
+Documentation = "https://github.com/divagr18/memlayer#readme"
+Issues = "https://github.com/divagr18/memlayer/issues"
 
 [tool.setuptools]
 package-dir = {"" = "."}

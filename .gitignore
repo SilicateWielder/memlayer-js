@@ -112,3 +112,5 @@ tmp/
 *.tmp
 *.bak
 *.old
+# Release artifacts
+RELEASE_CHECKLIST.md

@@ -2,7 +2,6 @@
 include README.md
 include LICENSE
 include .env.example
-include RELEASE_CHECKLIST.md
 
 # Include all documentation
 recursive-include docs *.md
@@ -27,3 +26,4 @@ prune tests
 exclude .gitignore
 exclude docker-compose.yml
 exclude Dockerfile
+exclude RELEASE_CHECKLIST.md
