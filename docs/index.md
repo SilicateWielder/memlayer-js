@@ -1,8 +1,8 @@
-# MemLayer
+# Memlayer
 
 **The plug-and-play memory layer for smart, contextual agents**
 
-MemLayer adds persistent, intelligent memory to any LLM, enabling agents that recall context across conversations, extract structured knowledge, and surface relevant information when it matters.
+Memlayer adds persistent, intelligent memory to any LLM, enabling agents that recall context across conversations, extract structured knowledge, and surface relevant information when it matters.
 
 **<100ms Fast Search • Noise-Aware Memory Gate • Multi-Tier Retrieval Modes • 100% Local • Zero Config**
 
@@ -27,11 +27,11 @@ response = client.chat([{"role": "user", "content": "Where do I work?"}])
 # -> "You work at TechCorp."
 ```
 
-MemLayer automatically filters, extracts, stores and retrieves relevant memories, no manual prompts required.
+Memlayer automatically filters, extracts, stores and retrieves relevant memories, no manual prompts required.
 
 ---
 
-## What makes MemLayer different
+## What makes Memlayer different
 
 - **Selective long-term memory** — we only store what matters, not every chat line.  
 - **Hybrid storage** — semantic vectors for recall plus a lightweight knowledge graph for relationships and updates.  
