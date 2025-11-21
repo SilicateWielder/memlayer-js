@@ -4,7 +4,7 @@
 
 **The plug-and-play memory layer for smart, contextual agents**
 
-Memlayer adds persistent, intelligent memory to any LLM, enabling agents that recall context across conversations, extract structured knowledge, and surface relevant information when it matters.
+Memlayer adds persistent, intelligent memory to any LLM in just 3 lines of code, enabling agents that recall context across conversations, extract structured knowledge, and surface relevant information when it matters.
 
 **<100ms Fast Search • Noise-Aware Memory Gate • Multi-Tier Retrieval Modes • 100% Local • Zero Config**
 
