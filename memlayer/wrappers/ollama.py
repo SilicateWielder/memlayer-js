@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 # Use TYPE_CHECKING to avoid slow imports at module load time
@@ -34,7 +35,7 @@ class Ollama(BaseLLMWrapper):
         
         client = Ollama(
             host="http://localhost:11434",
-            model="qwen3:1.7b",
+            model="qwen3:4b",
             storage_path="./my_memories",
             user_id="user_123"
         )
@@ -47,7 +48,7 @@ class Ollama(BaseLLMWrapper):
     def __init__(
         self,
         host: str = "http://localhost:11434",
-        model: str = "qwen3:1.7b",
+        model: str = "qwen3:4b",
         temperature: float = 0.7,
         storage_path: str = "./memlayer_data",
         user_id: str = "default_user",
@@ -63,7 +64,7 @@ class Ollama(BaseLLMWrapper):
         
         Args:
             host: Ollama server URL (default: "http://localhost:11434")
-            model: Model name to use (e.g., "qwen3:1.7b", "llama3:8b", "mistral:7b")
+            model: Model name to use (e.g., "qwen3:4b", "gpt-oss-20b")
             temperature: Sampling temperature (0.0 to 1.0)
             storage_path: Path where memories will be stored
             user_id: Unique identifier for the user
@@ -249,10 +250,37 @@ You have access to multiple tools. To use a tool, respond with a JSON object tha
 {tool_json}
 
 If the user's query is simple (like a greeting), respond directly. Otherwise, use the appropriate tool.
+Respond ONLY with the JSON. Do not include conversational text outside the JSON.
 
 User query: "{user_query}"
 Your JSON response (or direct answer):
 """
+
+    def _clean_and_parse_json(self, text: str) -> Optional[Dict]:
+        """
+        Helper method to robustly extract and parse JSON from LLM output.
+        Handles Markdown code blocks, conversational filler, and 'Extra data' errors.
+        """
+        try:
+            # 1. Regex for JSON block (find outermost curly braces)
+            match = re.search(r'\{[\s\S]*\}', text)
+            if match:
+                cleaned_text = match.group(0)
+                return json.loads(cleaned_text)
+            
+            # 2. Try standard parse if no regex match (fallback)
+            return json.loads(text)
+        except json.JSONDecodeError as e:
+            # 3. Handle "Extra data" (e.g. '{"a":1} I hope this helps!')
+            if "Extra data" in str(e):
+                try:
+                    # Try to decode up to the point of error
+                    # json.JSONDecoder().raw_decode returns (obj, end_index)
+                    obj, _ = json.JSONDecoder().raw_decode(text)
+                    return obj
+                except:
+                    pass
+            return None
 
     def chat(self, messages: list, stream: bool = False, **kwargs) -> str:
         """
@@ -287,15 +315,23 @@ Your JSON response (or direct answer):
         tool_prompt = self._generate_tool_prompt(messages)
         response_text = self._call_ollama(tool_prompt, **kwargs)
 
-        # 2. Check if the model's response is a tool call (a valid JSON)
-        try:
-            tool_call_data = json.loads(response_text)
+        # 2. Check if the model's response is a tool call using robust parsing
+        tool_call_data = self._clean_and_parse_json(response_text)
+        final_response = response_text # Default fallback
+
+        if tool_call_data and isinstance(tool_call_data, dict) and "name" in tool_call_data:
             tool_name = tool_call_data.get("name")
             
             if tool_name == "search_memory":
                 # It's a search_memory tool call!
                 params = tool_call_data.get("parameters", {})
                 query = params.get("query")
+                
+                # FIX: Handle cases where model outputs null or missing query
+                if not query or not isinstance(query, str):
+                    print(f"[Ollama] Warning: Model returned invalid query '{query}'. Falling back to user message.")
+                    query = user_query
+
                 search_tier = params.get("search_tier", "balanced")
                 
                 # 3. Execute the tool with graph traversal support
@@ -337,16 +373,8 @@ Your JSON response (or direct answer):
                 # Send the result back to LLM for acknowledgement
                 final_prompt = f"Please acknowledge to the user: {tool_response}"
                 final_response = self._call_ollama(final_prompt, **kwargs)
-            
-            else:
-                # It's JSON, but not a valid tool call
-                final_response = response_text
-        except json.JSONDecodeError:
-            # Not a JSON response, so it's a direct answer
-            final_response = response_text
 
         # 5. Consolidate in the background
-        user_query = messages[-1]['content']
         full_interaction = f"User: {user_query}\nAssistant: {final_response}"
         self.consolidation_service.consolidate(full_interaction, self.user_id)
 
@@ -397,14 +425,20 @@ Your JSON response (or direct answer):
                     if chunk_data.get("done", False):
                         break
             
-            # Check if this was a tool call
-            try:
-                tool_call_data = json.loads(full_response)
+            # Check if this was a tool call using robust parsing
+            tool_call_data = self._clean_and_parse_json(full_response)
+            
+            if tool_call_data and isinstance(tool_call_data, dict) and "name" in tool_call_data:
                 tool_name = tool_call_data.get("name")
                 
                 if tool_name == "search_memory":
                     params = tool_call_data.get("parameters", {})
                     query = params.get("query")
+                    
+                    # FIX: Fallback for missing query in streaming mode too
+                    if not query or not isinstance(query, str):
+                        query = user_query
+                        
                     search_tier = params.get("search_tier", "balanced")
                     
                     search_output = self.search_service.search(
@@ -468,10 +502,6 @@ Your JSON response (or direct answer):
                             if chunk_data.get("done", False):
                                 break
             
-            except json.JSONDecodeError:
-                # Not a tool call, already streamed the response
-                pass
-            
             # Consolidate after streaming completes
             full_interaction = f"User: {user_query}\nAssistant: {full_response}"
             self.consolidation_service.consolidate(full_interaction, self.user_id)
@@ -496,6 +526,7 @@ Your JSON response (or direct answer):
         current_datetime = datetime.now().strftime("%A, %B %d, %Y at %I:%M %p %Z")
         
         system_prompt = f"""
+        /no_think
 You are a Knowledge Graph Engineer AI. Your task is to analyze text and deconstruct it into a structured knowledge graph.
 The current date and time is {current_datetime}.
 You must identify:
@@ -528,15 +559,13 @@ Example JSON Output:
         try:
             response_text = self._call_ollama(prompt)
             
-            # Try to extract JSON from the response (in case there's extra text)
-            if "```json" in response_text:
-                json_start = response_text.find("{")
-                json_end = response_text.rfind("}") + 1
-                response_text = response_text[json_start:json_end]
-            
-            knowledge_graph = json.loads(response_text)
+            # Robust extraction using helper
+            knowledge_graph = self._clean_and_parse_json(response_text)
             
             # Basic validation to ensure keys exist
+            if not knowledge_graph:
+                 knowledge_graph = {}
+                 
             knowledge_graph.setdefault("facts", [])
             knowledge_graph.setdefault("entities", [])
             knowledge_graph.setdefault("relationships", [])
@@ -599,7 +628,8 @@ Example JSON Output:
         # --- Step 2: Construct the Synthesis Prompt ---
         # This prompt is engineered to prevent hallucination and force grounding.
         synthesis_prompt = f"""
-You are a synthesis model. Your task is to answer the user's question based *only* on the context provided below. Do not use any prior knowledge. If the context does not contain the answer, state that the information is not available in the memory.
+
+        You are a synthesis model. Your task is to answer the user's question based *only* on the context provided below. Do not use any prior knowledge. If the context does not contain the answer, state that the information is not available in the memory.
 
 **CONTEXT:**
 ---
@@ -651,14 +681,24 @@ JSON array:"""
         try:
             response_text = self._call_ollama(prompt)
             
-            # Try to extract JSON from the response
+            # Robust extraction for JSON array (handles Markdown code blocks)
             if "```json" in response_text or "```" in response_text:
                 json_start = response_text.find("[")
                 json_end = response_text.rfind("]") + 1
                 if json_start != -1 and json_end > json_start:
                     response_text = response_text[json_start:json_end]
             
-            entities = json.loads(response_text)
+            # Use helper if simple array extraction fails (though helper favors dicts, list extraction is straightforward)
+            try:
+                 entities = json.loads(response_text)
+            except:
+                 # Regex fallback for array
+                 match = re.search(r'\[[\s\S]*\]', response_text)
+                 if match:
+                     entities = json.loads(match.group(0))
+                 else:
+                     entities = []
+
             return entities if isinstance(entities, list) else []
         except Exception as e:
             print(f"Error extracting query entities: {e}")
